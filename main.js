@@ -62,7 +62,64 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
 
-  //add Flag with right click
+  function click(square) {
+    let currentId = square.id
+
+    if (isGameOver) return
+
+    if (square.classList.contains('checked') || square.classList.contains('flag')) return
+
+    if (square.classList.contains('bomb')) {
+      gameOver(square)
+    } else {
+      let total = square.getAttribute('data-adjacent-bombs')
+      if (total != 0) {
+        square.classList.add('checked')
+        if (total == 1) square.classList.add('one')
+        else if (total == 2) square.classList.add('two')
+        else if (total == 3) square.classList.add('three')
+        else if (total == 4) square.classList.add('four')
+        square.innerHTML = total
+        return
+      }
+      checkSquare(square, currentId)
+    }
+    square.classList.add('checked')
+  }
+
+
+  function checkSquare(square, currentId) {
+    const isLeftEdge = (currentId % WIDTH === 0)
+    const isRightEdge = (currentId % WIDTH === WIDTH - 1)
+    currentId = parseInt(currentId)
+
+    setTimeout(() => {
+      if (currentId > 0 && !isLeftEdge) click(document.getElementById(currentId - 1))  // left square
+      if (currentId > 9 && !isRightEdge) click(document.getElementById(currentId + 1 - WIDTH))  // top-right square
+      if (currentId > 9) click(document.getElementById(currentId - WIDTH))  // top square
+      if (currentId > 10 && !isLeftEdge) click(document.getElementById(currentId - 1 - WIDTH))  // top-left square
+      if (currentId < 99 && !isRightEdge) click(document.getElementById(currentId + 1))  // right square
+      if (currentId < 90 && !isLeftEdge) click(document.getElementById(currentId - 1 + WIDTH))  // bottom-left square
+      if (currentId < 89 && !isRightEdge) click(document.getElementById(currentId + 1 + WIDTH))  // bottom-right square
+      if (currentId < 90) click(document.getElementById(currentId + WIDTH))  // bottom square
+    }, 10)
+  }
+
+  function gameOver(square) {
+    result.innerHTML = 'BOOM! Game Over!'
+    isGameOver = true
+
+    // Show all the bomb locations
+    squares.forEach(square => {
+      if (square.classList.contains('bomb')) {
+        square.innerHTML = '💣'
+        square.classList.remove('bomb')
+        square.classList.add('checked')
+      }
+    })
+  }
+
+
   function addFlag(square) {
     if (isGameOver) return
     if (!square.classList.contains('checked') && (flags < BOMB_AMOUNT)) {
@@ -82,104 +139,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
 
-  function click(square) {
-    let currentId = square.id
-    if (isGameOver) return
-    if (square.classList.contains('checked') || square.classList.contains('flag')) return
-    if (square.classList.contains('bomb')) {
-      gameOver(square)
-    } else {
-      let total = square.getAttribute('data-adjacent-bombs')
-      if (total != 0) {
-        square.classList.add('checked')
-        if (total == 1) square.classList.add('one')
-        if (total == 2) square.classList.add('two')
-        if (total == 3) square.classList.add('three')
-        if (total == 4) square.classList.add('four')
-        square.innerHTML = total
-        return
-      }
-      checkSquare(square, currentId)
-    }
-    square.classList.add('checked')
-  }
-
-
-  //check neighboring squares once square is clicked
-  function checkSquare(square, currentId) {
-    const isLeftEdge = (currentId % WIDTH === 0)
-    const isRightEdge = (currentId % WIDTH === WIDTH - 1)
-
-    setTimeout(() => {
-      if (currentId > 0 && !isLeftEdge) {
-        const newId = squares[parseInt(currentId) - 1].id
-        //const newId = parseInt(currentId) - 1   ....refactor
-        const newSquare = document.getElementById(newId)
-        click(newSquare)
-      }
-      if (currentId > 9 && !isRightEdge) {
-        const newId = squares[parseInt(currentId) + 1 - WIDTH].id
-        //const newId = parseInt(currentId) +1 -width   ....refactor
-        const newSquare = document.getElementById(newId)
-        click(newSquare)
-      }
-      if (currentId > 10) {
-        const newId = squares[parseInt(currentId - WIDTH)].id
-        //const newId = parseInt(currentId) -width   ....refactor
-        const newSquare = document.getElementById(newId)
-        click(newSquare)
-      }
-      if (currentId > 11 && !isLeftEdge) {
-        const newId = squares[parseInt(currentId) - 1 - WIDTH].id
-        //const newId = parseInt(currentId) -1 -width   ....refactor
-        const newSquare = document.getElementById(newId)
-        click(newSquare)
-      }
-      if (currentId < 98 && !isRightEdge) {
-        const newId = squares[parseInt(currentId) + 1].id
-        //const newId = parseInt(currentId) +1   ....refactor
-        const newSquare = document.getElementById(newId)
-        click(newSquare)
-      }
-      if (currentId < 90 && !isLeftEdge) {
-        const newId = squares[parseInt(currentId) - 1 + WIDTH].id
-        //const newId = parseInt(currentId) -1 +width   ....refactor
-        const newSquare = document.getElementById(newId)
-        click(newSquare)
-      }
-      if (currentId < 88 && !isRightEdge) {
-        const newId = squares[parseInt(currentId) + 1 + WIDTH].id
-        //const newId = parseInt(currentId) +1 +width   ....refactor
-        const newSquare = document.getElementById(newId)
-        click(newSquare)
-      }
-      if (currentId < 89) {
-        const newId = squares[parseInt(currentId) + WIDTH].id
-        //const newId = parseInt(currentId) +width   ....refactor
-        const newSquare = document.getElementById(newId)
-        click(newSquare)
-      }
-    }, 10)
-  }
-
-  //game over
-  function gameOver(square) {
-    result.innerHTML = 'BOOM! Game Over!'
-    isGameOver = true
-
-    //show ALL the bombs
-    squares.forEach(square => {
-      if (square.classList.contains('bomb')) {
-        square.innerHTML = '💣'
-        square.classList.remove('bomb')
-        square.classList.add('checked')
-      }
-    })
-  }
-
-  //check for win
   function checkForWin() {
-    ///simplified win argument
     let matches = 0
 
     for (let i = 0; i < squares.length; i++) {
