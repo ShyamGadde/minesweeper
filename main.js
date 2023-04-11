@@ -48,14 +48,14 @@ document.addEventListener('DOMContentLoaded', () => {
       const isRightEdge = (i % WIDTH === WIDTH - 1)
 
       if (squares[i].classList.contains('valid')) {
-        if (i > 0 && !isLeftEdge && squares[i - 1].classList.contains('bomb')) total++
-        if (i > 9 && !isRightEdge && squares[i + 1 - WIDTH].classList.contains('bomb')) total++
-        if (i > 10 && squares[i - WIDTH].classList.contains('bomb')) total++
-        if (i > 11 && !isLeftEdge && squares[i - 1 - WIDTH].classList.contains('bomb')) total++
-        if (i < 98 && !isRightEdge && squares[i + 1].classList.contains('bomb')) total++
-        if (i < 90 && !isLeftEdge && squares[i - 1 + WIDTH].classList.contains('bomb')) total++
-        if (i < 88 && !isRightEdge && squares[i + 1 + WIDTH].classList.contains('bomb')) total++
-        if (i < 89 && squares[i + WIDTH].classList.contains('bomb')) total++
+        if (i > 0 && !isLeftEdge && squares[i - 1].classList.contains('bomb')) total++  // left square
+        if (i > 9 && !isRightEdge && squares[i + 1 - WIDTH].classList.contains('bomb')) total++  // top-right square
+        if (i > 9 && squares[i - WIDTH].classList.contains('bomb')) total++  // top square
+        if (i > 10 && !isLeftEdge && squares[i - 1 - WIDTH].classList.contains('bomb')) total++  // top-left square
+        if (i < 99 && !isRightEdge && squares[i + 1].classList.contains('bomb')) total++  // right square
+        if (i < 90 && !isLeftEdge && squares[i - 1 + WIDTH].classList.contains('bomb')) total++  // bottom-left square
+        if (i < 89 && !isRightEdge && squares[i + 1 + WIDTH].classList.contains('bomb')) total++  // bottom-right square
+        if (i < 90 && squares[i + WIDTH].classList.contains('bomb')) total++  // bottom
         squares[i].setAttribute('data-adjacent-bombs', total)
       }
     }
