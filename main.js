@@ -24,13 +24,13 @@ document.addEventListener('DOMContentLoaded', () => {
       for(let i = 0; i < width*width; i++) {
         const square = document.createElement('div')
         square.setAttribute('id', i)
-        square.classList.add(states[i])
+        square.classList.add(states[i], 'box')
         grid.appendChild(square)
         squares.push(square)
   
         square.addEventListener('click', () => click(square))
   
-        square.oncontextmenu = () => {
+        square.oncontextmenu = e => {
           e.preventDefault()
           addFlag(square)
         }
